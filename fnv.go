@@ -27,7 +27,6 @@ func init() {
 
 	prime128.SetString("309485009821345068724781371", 0)
 	offset128.SetString("144066263297769815596495629667062367629", 0)
-
 }
 
 // New128a returns a new 128-bit FNV-1a big.Int.
