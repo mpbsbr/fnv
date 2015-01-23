@@ -1,6 +1,7 @@
 package fnv
 
 import (
+	"fmt"
 	"hash"
 	"math/big"
 )
@@ -22,6 +23,7 @@ const (
 var offset128, prime128 sum128a
 
 func init() {
+	fmt.Println("here")
 	prime128 = sum128a{&big.Int{}}
 	offset128 = sum128a{&big.Int{}}
 
@@ -38,17 +40,8 @@ func New128a() Hash128 {
 
 func (s *sum128a) Reset()          { s.Set(offset128.Int) }
 func (s *sum128a) Sum128() big.Int { return *s.Int }
-func (s *sum128a) Size() int       { return 16 }
-func (s *sum128a) BlockSize() int  { return 1 }
 
-func (s *sum128a) Sum(in []byte) []byte {
-
-	sBytes := s.Bytes()
-	return append(in, sBytes[len(sBytes)-s.Size():]...)
-
-}
-
-func (s *sum128a) Write(data []byte) (int, error) {
+func (s *sum128a) WriteOrg(data []byte) (int, error) {
 
 	hash := sum128a{&big.Int{}}
 	hash.Set(s.Int)
@@ -60,4 +53,23 @@ func (s *sum128a) Write(data []byte) (int, error) {
 
 	return len(data), nil
 
+}
+
+func (s *sum128a) Write(data []byte) (int, error) {
+
+	for _, c := range data {
+		s.Xor(s.Int, big.NewInt(int64(c)))
+		s.Mul(s.Int, prime128.Int)
+	}
+
+	return len(data), nil
+
+}
+
+func (s *sum128a) Size() int      { return 16 }
+func (s *sum128a) BlockSize() int { return 1 }
+
+func (s *sum128a) Sum(in []byte) []byte {
+	sBytes := s.Bytes()
+	return append(in, sBytes[len(sBytes)-s.Size():]...)
 }
