@@ -27,8 +27,9 @@ func main() {
 
 	validate := clearTexts[len(clearTexts)-1]
 	log.Printf("clearText: %s", validate)
-	log.Printf("gfnv digest: %s", hex.EncodeToString(gfnv64aOne(validate)))
-	log.Printf("fnv digest: %s", hex.EncodeToString(fnv128aOne(validate)))
+	log.Printf("gfnv64a digest: %s", hex.EncodeToString(gfnv64aOne(validate)))
+	log.Printf("fnv128a digest: %s", hex.EncodeToString(fnv128aOne(validate)))
+	log.Printf("fnv128 digest: %s", hex.EncodeToString(fnv128One(validate)))
 	log.Printf("md5 digest: %s", hex.EncodeToString(md5One(validate)))
 
 	logBlankLines(1)
@@ -38,6 +39,19 @@ func main() {
 	md5All(clearTexts)
 
 	logBlankLines(Margin)
+}
+
+func fnv128All(clearTexts []string) {
+	defer timeTrack(time.Now(), funcName(1))
+	for _, value := range clearTexts {
+		fnv128One(value)
+	}
+}
+
+func fnv128One(clearText string) []byte {
+	hash := fnv.New128()
+	hash.Write([]byte(clearText))
+	return hash.Sum(nil)
 }
 
 func fnv128aAll(clearTexts []string) {
