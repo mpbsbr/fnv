@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-const MaxClearTextIterations = 5000
+const MaxClearTextIterations = 20
 const Margin = 2
 
 func main() {
@@ -26,17 +26,19 @@ func main() {
 	}
 
 	validate := clearTexts[len(clearTexts)-1]
-	log.Printf("clearText: %s", validate)
-	log.Printf("gfnv64a digest: %s", hex.EncodeToString(gfnv64aOne(validate)))
-	log.Printf("fnv128a digest: %s", hex.EncodeToString(fnv128aOne(validate)))
-	log.Printf("fnv128 digest: %s", hex.EncodeToString(fnv128One(validate)))
-	log.Printf("md5 digest: %s", hex.EncodeToString(md5One(validate)))
+	log.Printf("clearText:\t\t\t %s", validate)
+	log.Printf("stdlib fnv64a digest:\t %s", hex.EncodeToString(gfnv64aOne(validate)))
+	log.Printf("stdlib md5 digest:\t\t %s\n", hex.EncodeToString(md5One(validate)))
+	log.Printf("fnv128a digest:\t\t %s", hex.EncodeToString(fnv128aOne(validate)))
+	log.Printf("fnv128 digest:\t\t %s", hex.EncodeToString(fnv128One(validate)))
 
-	logBlankLines(1)
+	logBlankLines(2)
 
 	gfnv64aAll(clearTexts)
-	fnv128aAll(clearTexts)
 	md5All(clearTexts)
+	logBlankLines(1)
+	fnv128aAll(clearTexts)
+	fnv128All(clearTexts)
 
 	logBlankLines(Margin)
 }
@@ -95,7 +97,7 @@ func md5One(clearText string) []byte {
 
 func timeTrack(start time.Time, name string) {
 	elapsed := time.Since(start)
-	log.Printf("%s took %s", name, elapsed)
+	log.Printf("%-20s %s", name, elapsed/MaxClearTextIterations*10)
 }
 
 func funcName(depth int) string {
